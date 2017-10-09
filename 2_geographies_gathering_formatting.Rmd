@@ -32,14 +32,17 @@ I have created a `boundary` folder in my workspace and a `state`, `county` and `
 
 ### State geography
 
-To load and manipulate the data in the shapefile, we will use the `sf` package. `sf` represents the data in the shapefile as a list of simple features. You can learn more about `sf` and simple features [here](http://r-spatial.org/r/2016/02/15/simple-features-for-r.html).
+To load and manipulate the data in the shapefile, we will use the `sf` package. `sf` represents the data in the shapefile as a list of simple features. You can learn more about `sf` and simple features [here](http://r-spatial.org/r/2016/02/15/simple-features-for-r.html). 
 
-To load a shapefile in R, we use `st_read`.
+The shapefile we downloaded does not use the same geographic coordinate system that GPS and WebMap providers use. We will need to transform our coordinates to EPSG:4326, the most common coordinate system in web maps.
+
+To load a shapefile in R, we use `st_read`. To change coordinate system, we'll use `st_transform` along with the `crs` corresponding to EPSG:4326. You can learn more about coordinate systems [here](http://spatialreference.org/ref/epsg/wgs-84/).
 
 ```{r}
 state_geo <- 
   './boundary/state/tl_2010_us_state10.shp' %>% 
-  st_read()
+  st_read() %>% 
+  st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
 state_geo %>% head()
 ```
@@ -137,7 +140,8 @@ Loading the county boundary file:
 ```{r}
 county_geo <- 
   './boundary/county/tl_2010_us_county10.shp' %>% 
-  st_read()
+  st_read() %>% 
+  st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
 county_geo %>% arrange(STATEFP10, COUNTYFP10) %>% head()
 ```
@@ -245,7 +249,10 @@ if (!file.exists('./boundary/tract/tract.geojson')) {
   tract_geo <- 
     list.files('./boundary/tract/', pattern = "\\.shp$", recursive = T) %>% 
     str_c('./boundary/tract/', .) %>% 
-    map(st_read) %>% 
+    map(function(x) {x %>% 
+                      st_read %>% 
+                      st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")}
+    ) %>% 
     do.call("rbind", .)
 
   tract_geo %>% 
