@@ -2,7 +2,7 @@
 title: "Example - data gathering / formatting"
 author: "Maeva"
 date: "9/25/2017"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
@@ -114,9 +114,9 @@ Request state data:
 ```{r}
 # If we've already downloaded the data,
 # load data from file
-if (file.exists('./data/state_data.tsv')) {
+if (file.exists('../data/state_data.tsv')) {
   state_data <- 
-    './data/state_data.tsv' %>% 
+    '../data/state_data.tsv' %>% 
     read_tsv()
   
 # If not, query the API
@@ -127,7 +127,7 @@ if (file.exists('./data/state_data.tsv')) {
     queryAPI()
   
   state_data %>% 
-    write_tsv('./data/state_data.tsv')
+    write_tsv('../data/state_data.tsv')
 }
 
 
@@ -171,9 +171,9 @@ Request county data:
 ```{r}
 # If we've already downloaded the data,
 # load data from file
-if (file.exists('./data/county_data.tsv')) {
+if (file.exists('../data/county_data.tsv')) {
   county_data <- 
-    './data/county_data.tsv' %>% 
+    '../data/county_data.tsv' %>% 
     read_tsv()
   
 # If not, query the API
@@ -184,7 +184,7 @@ if (file.exists('./data/county_data.tsv')) {
     queryAPI()
   
   county_data %>% 
-    write_tsv('./data/county_data.tsv')
+    write_tsv('../data/county_data.tsv')
 }
 
 # Let's have a look at the count_data
@@ -235,9 +235,9 @@ Request census tract data:
 ```{r}
 # If we've already downloaded the data,
 # load data from file
-if (file.exists('./data/tract_data.tsv')) {
+if (file.exists('../data/tract_data.tsv')) {
   tract_data <- 
-    './data/tract_data.tsv' %>% 
+    '../data/tract_data.tsv' %>% 
     read_tsv()
   
 # If not, download the data from the API
@@ -248,7 +248,7 @@ if (file.exists('./data/tract_data.tsv')) {
     map_dfr(censusTract_query)
   
   tract_data %>% 
-    write_tsv('./data/tract_data.tsv') 
+    write_tsv('../data/tract_data.tsv') 
 }
 
 ```

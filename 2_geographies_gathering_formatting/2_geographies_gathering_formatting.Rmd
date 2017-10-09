@@ -2,11 +2,13 @@
 title: "geographies_gathering_formatting"
 author: "Maeva"
 date: "9/27/2017"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(cache.lazy = TRUE)
 library(tidyverse)
 library(stringr)
 library(sf)
@@ -16,13 +18,29 @@ library(sf)
 This is step 2 in our step-by-step guide to make an interactive Web Map displaying demographic data in the US.
 We assume that you have the 3 tables `state_data`, `county_data` and `tract_data`, containing demographic information by origin/race at the state, county and census tract level respectively.
 
+You can adapt the following chunk to load the data files.
+
+```{r}
+county_data <- 
+    '../data/county_data.tsv' %>% 
+    read_tsv()
+
+state_data <- 
+  '../data/state_data.tsv' %>% 
+  read_tsv()
+
+tract_data <- 
+  '../data/tract_data.tsv' %>% 
+  read_tsv()
+```
+
 The goal is now to obtain the geographic boundaries for states, counties and census tracts.
 
 ## Tiger files from the census bureau
 
 Since we are using the 2010 census data, we will use the 2010 boundaries available on the census bureau website. Every year, the census bureau releases an up-to-date version of the legal boundaries for state, counties and census tracts, among other geographic areas. These files are in the shapefile format, a format that is comprehensive but too heavy to use on the web. We will download the shapefiles, load them into R to join with our data and then export them into geoJSON. GeoJSON is the format that most web mapping libraries are expecting.
 
-  * state baundary: `ftp://ftp2.census.gov/geo/tiger/TIGER2010//STATE/2010/tl_2010_us_state10.zip`
+  * state boundary: `ftp://ftp2.census.gov/geo/tiger/TIGER2010//STATE/2010/tl_2010_us_state10.zip`
   * county boundary: `ftp://ftp2.census.gov/geo/tiger/TIGER2010//COUNTY/2010/tl_2010_us_county10.zip`
   * census tract boundary: `ftp://ftp2.census.gov/geo/tiger/TIGER2010//TRACT/2010`
   
@@ -38,9 +56,9 @@ The shapefile we downloaded does not use the same geographic coordinate system t
 
 To load a shapefile in R, we use `st_read`. To change coordinate system, we'll use `st_transform` along with the `crs` corresponding to EPSG:4326. You can learn more about coordinate systems [here](http://spatialreference.org/ref/epsg/wgs-84/).
 
-```{r}
+```{r message=FALSE}
 state_geo <- 
-  './boundary/state/tl_2010_us_state10.shp' %>% 
+  '../boundary/state/tl_2010_us_state10.shp' %>% 
   st_read() %>% 
   st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
@@ -125,9 +143,9 @@ state <-
 
 state %>% head()
 
-if (!file.exists('./geojson/state.geojson')) {
+if (!file.exists('../geojson/state.geojson')) {
   state %>% 
-    st_write('./geojson/state.geojson')
+    st_write('../geojson/state.geojson')
 }
 ```
 
@@ -139,7 +157,7 @@ Loading the county boundary file:
 
 ```{r}
 county_geo <- 
-  './boundary/county/tl_2010_us_county10.shp' %>% 
+  '../boundary/county/tl_2010_us_county10.shp' %>% 
   st_read() %>% 
   st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
@@ -234,9 +252,9 @@ county <-
 
 county %>% head()
 
-if (!file.exists('./geojson/county.geojson')) {
+if (!file.exists('../geojson/county.geojson')) {
   county %>% 
-    st_write('./geojson/county.geojson')
+    st_write('../geojson/county.geojson')
 }
 ```
 
@@ -245,10 +263,10 @@ if (!file.exists('./geojson/county.geojson')) {
 Creating the census tract geoJSON will require a little more work because we had to download a separate shapefile for each state. We need to merge all these shapefile into a single dataset before we can join the census tract data. To do that we can use the `rbind` function from `sf` that extends row binding functionality to simple feature objects. Because this might take a while, once it's done, we are going to save the concatenated `tract_geo` simple feature collection as geoJSON. If you want to rerun this analysis later, you will just have to load the geosjon file instead of concatenating all the shapefiles again.
 
 ```{r}
-if (!file.exists('./boundary/tract/tract.geojson')) {
+if (!file.exists('../boundary/tract/tract.geojson')) {
   tract_geo <- 
-    list.files('./boundary/tract/', pattern = "\\.shp$", recursive = T) %>% 
-    str_c('./boundary/tract/', .) %>% 
+    list.files('../boundary/tract/', pattern = "\\.shp$", recursive = T) %>% 
+    str_c('../boundary/tract/', .) %>% 
     map(function(x) {x %>% 
                       st_read %>% 
                       st_transform(crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")}
@@ -256,11 +274,11 @@ if (!file.exists('./boundary/tract/tract.geojson')) {
     do.call("rbind", .)
 
   tract_geo %>% 
-    st_write('./boundary/tract/tract.geojson')
+    st_write('../boundary/tract/tract.geojson')
   
 } else {
   tract_geo <- 
-    './boundary/tract/tract.geojson' %>% 
+    '../boundary/tract/tract.geojson' %>% 
     st_read()
 }
 
@@ -351,9 +369,9 @@ tract <-
 
 tract %>% head() %>% glimpse()
 
-if (!file.exists('./geojson/tract.geojson')) {
+if (!file.exists('../geojson/tract.geojson')) {
   tract %>% 
-    st_write('./geojson/tract.geojson')
+    st_write('../geojson/tract.geojson')
 }
 ```
 
