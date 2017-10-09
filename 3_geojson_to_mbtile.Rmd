@@ -1,0 +1,19 @@
+---
+title: "geoJSON to mbtile"
+author: "Maeva"
+date: "9/29/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is step 3 in our tutorial on howto make an interactive web map displaying demographic information across the US. In the first 2 chapters, you've learnt how to scrape data and boundaries from the census bureau website, to format and join them and to turn them into geoJSON. You should now have 3 geoJSON files: 
+
+  * `state.geojson`
+  * `county.geojson`
+  * `tract.geojson`
+  
+Looking at the size of these files, you should see that although `state` and `county` are small enough to be sent over the web to your future map visitor. There is no way you can send `tract`, with it's 1Gb size.
+
