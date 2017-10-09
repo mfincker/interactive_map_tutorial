@@ -2,7 +2,7 @@
 title: "geoJSON to mbtile"
 author: "Maeva"
 date: "9/29/2017"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
@@ -15,5 +15,51 @@ This is step 3 in our tutorial on howto make an interactive web map displaying d
   * `county.geojson`
   * `tract.geojson`
   
-Looking at the size of these files, you should see that although `state` and `county` are small enough to be sent over the web to your future map visitor. There is no way you can send `tract`, with it's 1Gb size.
+Looking at the size of these files, you should see that although `state` and `county` are small enough to be sent over the web to your future map visitor. There is no way you can send `tract`, with its 1Gb size.
+
+Instead of sending the whole files to your visitor, we will break it down into small vector square tiles that can then be sent separately over the web. To make these tiles, we will use [tippecanoe](https://github.com/mapbox/tippecanoe). This command-line program allows you to turn geoJSON files into mbtiles, which is the vector tile format. 
+
+Follow the installation instruction on the tippecanoe page and open a terminal window.
+
+If you've installed tippecanoe correctly, the following command should show you the different parameters that can be modified when calling tippecanoe.
+
+```
+tippecanoe -h
+```
+
+By default, tippecanoe will create 12 set of tiles, corresponding to 12 zoom levels but it will not create tile files that are larger than 500MB (because MapBox, the tile serving service we will use doesn't accept larger files). When the number of features in a geoJSON is small, like in our `state.geojson`, the tile file will be very light and we can create a set of tiles for each of the 12 zoom levels. However, if you try to create all 12 zoom levels for our `tract.geojson` file, tippecanoe will warn you that the tile file excedes the allowed 500MB. To avoid this issue, we'll take advantage from the fact that we will only display the tract data at high zoom level, the county data at medium zoom level and the state data at low zoom level. We will tell tippecanoe to only create the zoom levels that matter.
+
+Tippecanoe reads input from the standard input or from a specified geojson file. A typical call to tippecanoe would be:
+
+```
+cat yourgeojson.geojson | tippecanoe -o yournewtiles.mbtiles
+```
+
+Navigate to the folder containing your 3 geojson files. We will now create 3 tile sets, one for each of the geojson files. Since we are not sure yet which zoom level will yield the best transitions, we will create tile sets for overlapping zoom windows
+
+  # State tiles:
+  
+  State data should be visible from zoom level 1 to 8:
+  
+  ```
+  cat state.geojson | tippecanoe -z8 -o state.mbtiles
+  ```
+  
+  # County tiles:
+  
+  County data should be visible from zoom level 5 to 10:
+  
+  ```
+  cat county.geojson | tippecanoe -z 10 -Z 5 -o county.mbtiles
+  ```
+  
+  # Tract tiles:
+  
+  Tract data should be visible from zoom level 9 to 12:
+  
+  ```
+  cat tract.geojson | tippecanoe -z12 -Z9 -o tract.mbtiles
+  ```
+
+After running these 3 commands, you should have 3 new mbtile files containing the tilesets for the state, county and tract data.
 
