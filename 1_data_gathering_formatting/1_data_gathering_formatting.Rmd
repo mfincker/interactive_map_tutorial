@@ -255,26 +255,5 @@ if (file.exists('../data/tract_data.tsv')) {
 
 And done! We finally have all the data needed to build our interactive map. Next, we will get the boundary files and join them with the data we just obtained.
 
-### Sanity check
 
-Aggregating the census tract data at the county level should give us the county data back.
-
-```{r}
-tract_data %>% 
-  group_by(state, county) %>% 
-  summarise_if(is.numeric, sum) %>% 
-  compare(comparison = county_data %>% select(-name), 
-          allowAll = T)
-```
-
-Aggregating the census tract data at the state level should give us the state data back.
-
-```{r}
-tract_data %>% 
-  group_by(state) %>% 
-  summarise_if(is.numeric, sum) %>% 
-  compare(comparison = state_data %>% select(-name), 
-          allowAll = T)
-```
-```
 
