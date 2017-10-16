@@ -14,7 +14,10 @@
 
 <div id='map'></div>
 
-<p>See code <a href="https://bl.ocks.org/mfincker/13e7c5c4444e00121e55ade0e089af38/923e0bfdc0e7795e51be8875ca96ccec8deea358">here</a>. </p>
+<p>See blocks <a href="https://bl.ocks.org/mfincker/13e7c5c4444e00121e55ade0e089af38/923e0bfdc0e7795e51be8875ca96ccec8deea358">here</a>.</p>
+
+<script src="https://gist.github.com/mfincker/13e7c5c4444e00121e55ade0e089af38.js"></script>
+
 
 <script>
 // Replace this with your own token when making maps with your own layers
@@ -48,17 +51,17 @@ map.on('load', function() {
     // Specify the source for the map layers
     map.addSource('state', {
         'type': 'vector',
-        'url': 'mapbox://mfincker.dmslrrc4'
+        'url': 'mapbox://mfincker.5a5pwuuf'
     });
   
     map.addSource('county', {
         'type': 'vector',
-        'url': 'mapbox://mfincker.4xsevgwl'
+        'url': 'mapbox://mfincker.6cry8xr7'
     });
   
     map.addSource('tract', {
         'type': 'vector',
-        'url': 'mapbox://mfincker.be0m0y5g'
+        'url': 'mapbox://mfincker.8wiiisxj'
     });
 
     // Add layers,
@@ -73,13 +76,12 @@ map.on('load', function() {
         'type': 'fill',
         'paint': {
             'fill-color': {
-                property: 'black_percent',
+                property: 'white_percent',
                 stops: color_scale,
             },
-            'fill-opacity': 0.75,
-            'fill-outline-color': '#acb1bb'
+            'fill-opacity': 0.75
         }
-    }, 'waterway-label');
+    }, 'border-admin-3-4');
 
     // County
     map.addLayer({
@@ -90,13 +92,13 @@ map.on('load', function() {
         'type': 'fill',
         'paint': {
             'fill-color': {
-                property: 'black_percent',
+                property: 'white_percent',
                 stops: color_scale,
             },
             'fill-opacity': 0.7,
             'fill-outline-color': '#acb1bb'
         }
-    }, 'waterway-label');
+    }, 'border-admin-3-4');
 
     // Tract
     map.addLayer({
@@ -107,13 +109,13 @@ map.on('load', function() {
         'type': 'fill',
         'paint': {
             'fill-color': {
-                property: 'black_percent',
+                property: 'white_percent',
                 stops: color_scale,
             },
             'fill-opacity': 0.65,
             'fill-outline-color': '#acb1bb'
         }
-    }, 'waterway-label');
+    }, 'border-admin-3-4');
 
 
 });

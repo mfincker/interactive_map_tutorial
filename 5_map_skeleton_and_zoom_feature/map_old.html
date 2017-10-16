@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.40.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.40.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+
+.legend {
+    background-color: #fff;
+    border-radius: 3px;
+    bottom: 30px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    padding: 10px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+}
+
+.legend h4 {
+    margin: 0 0 10px;
+}
+
+.legend div span {
+    border-radius: 50%;
+    display: inline-block;
+    height: 10px;
+    margin-right: 5px;
+    width: 10px;
+}
+  #tooltip {
+    position: absolute;
+    top: 0;
+    left:0;
+    border: 1px solid black;
+  }
+    
+    #layers {
+    position: absolute;
+    top: 0;
+    left:0;
+    }
+
+  }
+
+</style>
+
+<div id='map'></div>
+<div id="tooltip">Test</div>
+<div id="layers">
+  <ul>
+    <li><label><input type="radio" name="layers" value="poverty_rate_hispanic"> poverty_rate_hispanic</label>
+     <li><label><input type="radio" name="layers" value="poverty_rate" checked> poverty_rate</label>
+  </ul>
+  </div>
+
+<div id='state-legend' class='legend'>
+    <h4>Population</h4>
+    <div><span style='background-color: #723122'></span>25,000,000</div>
+    <div><span style='background-color: #8B4225'></span>10,000,000</div>
+    <div><span style='background-color: #A25626'></span>7,500,000</div>
+    <div><span style='background-color: #B86B25'></span>5,000,000</div>
+    <div><span style='background-color: #CA8323'></span>2,500,000</div>
+    <div><span style='background-color: #DA9C20'></span>1,000,000</div>
+    <div><span style='background-color: #E6B71E'></span>750,000</div>
+    <div><span style='background-color: #EED322'></span>500,000</div>
+    <div><span style='background-color: #F2F12D'></span>0</div>
+</div>
+
+<div id='county-legend' class='legend' style='display: none;'>
+    <h4>Population</h4>
+    <div><span style='background-color: #723122'></span>1,000,000</div>
+    <div><span style='background-color: #8B4225'></span>500,000</div>
+    <div><span style='background-color: #A25626'></span>100,000</div>
+    <div><span style='background-color: #B86B25'></span>50,000</div>
+    <div><span style='background-color: #CA8323'></span>10,000</div>
+    <div><span style='background-color: #DA9C20'></span>5,000</div>
+    <div><span style='background-color: #E6B71E'></span>1,000</div>
+    <div><span style='background-color: #EED322'></span>100</div>
+    <div><span style='background-color: #F2F12D'></span>0</div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3RhbWVuIiwiYSI6IlpkZEtuS1EifQ.jiH_c9ShtBwtqH9RdG40mw';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-98, 38.88],
+    minZoom: 3,
+    zoom: 3
+});
+
+// var zoomThreshold = 4;
+
+map.on('load', function() {
+
+    map.addSource('county_geo_data', {
+        'type': 'vector',
+        'url': 'mapbox://stamen.cccc8kgi'
+    });
+  
+     map.addSource('tract_geo_data', {
+        'type': 'vector',
+        'url': 'mapbox://stamen.42zqg3sk'
+    });
+  
+       map.addSource('block_geo_data', {
+        'type': 'vector',
+        'url': 'mapbox://stamen.0ujdjkh2'
+    });
+
+    map.addLayer({
+        'id': 'county',
+        'source': 'county_geo_data',
+        'source-layer': 'county_geo_data',
+      	'maxZoom': 9,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'poverty_rate',
+                stops: [
+                    [0, '#F2F12D'],
+                    [0.1, '#EED322'],
+                    [0.2, '#E6B71E'],
+                    [0.3, '#DA9C20'],
+                    [0.4, '#CA8323']
+                ]
+            },
+            'fill-opacity': 0.75
+        }
+    }, 'waterway-label');
+  
+  map.on('mousemove', 'county', function (e) {
+    var features = map.queryRenderedFeatures(e.point);
+    document.getElementById('tooltip').style.top = event.clientY - 25 + 'px';
+    document.getElementById('tooltip').style.left = event.clientX + 'px';
+    document.getElementById('tooltip').innerHTML = features[0].properties.NAME;
+
+    
+console.log(features)});
+  
+  document.getElementById("layers").addEventListener('click', changeLayer, false);
+  
+  function changeLayer(e) {
+  if (e.target.value && e.target !== e.currentTarget) {
+        console.log(e.target.value)
+          map.setPaintProperty('county', 'fill-color', {
+                property: e.target.value,
+                stops: [
+                    [0, '#F2F12D'],
+                    [0.1, '#EED322'],
+                    [0.2, '#E6B71E'],
+                    [0.3, '#DA9C20'],
+                    [0.4, '#CA8323']
+                ]
+            });
+    }
+    e.stopPropagation();
+}
+  
+   map.addLayer({
+        'id': 'tract',
+        'source': 'tract_geo_data',
+        'source-layer': 'tract_geo_data',
+      	'maxZoom': 12,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'poverty_rate',
+                stops: [
+                    [0, '#F2F12D'],
+                    [0.1, '#EED322'],
+                    [0.2, '#E6B71E'],
+                    [0.3, '#DA9C20'],
+                    [0.4, '#CA8323']
+                ]
+            },
+            'fill-opacity': 0.75
+        }
+    }, 'waterway-label');
+
+  
+  map.addLayer({
+        'id': 'block',
+        'source': 'block_geo_data',
+        'source-layer': 'block_geo_data',
+    'minZoom': 10, 
+      	'maxZoom': 12,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'poverty_rate',
+                stops: [
+                    [0, '#F2F12D'],
+                    [0.1, '#EED322'],
+                    [0.2, '#E6B71E'],
+                    [0.3, '#DA9C20'],
+                    [0.4, '#CA8323']
+                ]
+            },
+            'fill-opacity': 0.75
+        }
+    }, 'waterway-label');
+
+//     map.addLayer({
+//         'id': 'county-population',
+//         'source': 'population',
+//         'source-layer': 'state_county_population_2014_cen',
+//         'minzoom': zoomThreshold,
+//         'type': 'fill',
+//         'filter': ['==', 'isCounty', true],
+//         'paint': {
+//             'fill-color': {
+//                 property: 'population',
+//                 stops: [
+//                     [0, '#F2F12D'],
+//                     [100, '#EED322'],
+//                     [1000, '#E6B71E'],
+//                     [5000, '#DA9C20'],
+//                     [10000, '#CA8323'],
+//                     [50000, '#B86B25'],
+//                     [100000, '#A25626'],
+//                     [500000, '#8B4225'],
+//                     [1000000, '#723122']
+//                 ]
+//             },
+//             'fill-opacity': 0.75
+//         }
+//     }, 'waterway-label');
+
+});
+
+// var stateLegendEl = document.getElementById('state-legend');
+// var countyLegendEl = document.getElementById('county-legend');
+// map.on('zoom', function() {
+//     if (map.getZoom() > zoomThreshold) {
+//         stateLegendEl.style.display = 'none';
+//         countyLegendEl.style.display = 'block';
+//     } else {
+//         stateLegendEl.style.display = 'block';
+//         countyLegendEl.style.display = 'none';
+//     }
+// });
+
+</script>
+
+</body>
+</html>

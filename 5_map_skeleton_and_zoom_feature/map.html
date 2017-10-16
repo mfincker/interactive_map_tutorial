@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="main.css" rel='stylesheet'>
+</head>
+<body>
+
+<div id='map'></div>
+<div id="tooltip">Test</div>
+<div id="layers">
+  <ul>
+    <li><label><input type="radio" name="layers" value="poverty_rate_hispanic"> poverty_rate_hispanic</label>
+     <li><label><input type="radio" name="layers" value="poverty_rate" checked> poverty_rate</label>
+  </ul>
+  </div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibWZpbmNrZXIiLCJhIjoiY2o3cW1vdTdlNDRiNjMzbnB4Yzc5OTF2cSJ9.ZOpKJ4FmWj8CUpsKbsh-dg';
+
+const color_scale = [
+                        [0,   '#ffffe5'],
+                        [0.1, '#f7fcfd'],
+                        [0.2, '#e0ecf4'],
+                        [0.3, '#bfd3e6'],
+                        [0.4, '#9ebcda'],
+                        [0.5, '#8c96c6'],
+                        [0.6, '#8c6bb1'],
+                        [0.7, '#88419d'],
+                        [0.8, '#810f7c'],
+                        [0.9, '#4d004b']
+                    ];
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mfincker/cj8q54extaap22rqmx4ylissd',
+    center: [-98, 38.88],
+    minZoom: 3,
+    zoom: 3
+});
+
+// var zoomThreshold = 4;
+
+map.on('load', function() {
+
+    map.addSource('state', {
+        'type': 'vector',
+        'url': 'mapbox://mfincker.dmslrrc4'
+    });
+  
+    map.addSource('county', {
+        'type': 'vector',
+        'url': 'mapbox://mfincker.4xsevgwl'
+    });
+  
+    map.addSource('tract', {
+        'type': 'vector',
+        'url': 'mapbox://mfincker.be0m0y5g'
+    });
+
+    map.addLayer({
+        'id': 'state',
+        'source': 'state',
+        'source-layer': 'state',
+      	'maxZoom': 4,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'white_percent',
+                stops: color_scale,
+            },
+            'fill-opacity': 0.75,
+            'fill-outline-color': '#acb1bb'
+        }
+    }, 'waterway-label');
+
+    map.addLayer({
+        'id': 'county',
+        'source': 'county',
+        'source-layer': 'county',
+        'maxZoom': 8,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'white_percent',
+                stops: color_scale,
+            },
+            'fill-opacity': 0.7,
+            'fill-outline-color': '#acb1bb'
+        }
+    }, 'waterway-label');
+
+    map.addLayer({
+        'id': 'tract',
+        'source': 'tract',
+        'source-layer': 'tract',
+        'minZoom': 8,
+        'type': 'fill',
+        'paint': {
+            'fill-color': {
+                property: 'white_percent',
+                stops: color_scale,
+            },
+            'fill-opacity': 0.65,
+            'fill-outline-color': '#acb1bb'
+        }
+    }, 'waterway-label');
+  
+  // map.on('mousemove', 'county', function (e) {
+  //   var features = map.queryRenderedFeatures(e.point);
+  //   document.getElementById('tooltip').style.top = event.clientY - 25 + 'px';
+  //   document.getElementById('tooltip').style.left = event.clientX + 'px';
+  //   document.getElementById('tooltip').innerHTML = features[0].properties.NAME;
+
+    
+// console.log(features)});
+  
+  // document.getElementById("layers").addEventListener('click', changeLayer, false);
+  
+//   function changeLayer(e) {
+//   if (e.target.value && e.target !== e.currentTarget) {
+//         console.log(e.target.value)
+//           map.setPaintProperty('county', 'fill-color', {
+//                 property: e.target.value,
+//                 stops: [
+//                     [0, '#F2F12D'],
+//                     [0.1, '#EED322'],
+//                     [0.2, '#E6B71E'],
+//                     [0.3, '#DA9C20'],
+//                     [0.4, '#CA8323']
+//                 ]
+//             });
+//     }
+//     e.stopPropagation();
+// }
+  
+   // map.addLayer({
+   //      'id': 'tract',
+   //      'source': 'tract_geo_data',
+   //      'source-layer': 'tract_geo_data',
+   //    	'maxZoom': 12,
+   //      'type': 'fill',
+   //      'paint': {
+   //          'fill-color': {
+   //              property: 'poverty_rate',
+   //              stops: [
+   //                  [0, '#F2F12D'],
+   //                  [0.1, '#EED322'],
+   //                  [0.2, '#E6B71E'],
+   //                  [0.3, '#DA9C20'],
+   //                  [0.4, '#CA8323']
+   //              ]
+   //          },
+   //          'fill-opacity': 0.75
+   //      }
+   //  }, 'waterway-label');
+
+  
+  // map.addLayer({
+  //       'id': 'block',
+  //       'source': 'block_geo_data',
+  //       'source-layer': 'block_geo_data',
+  //   'minZoom': 10, 
+  //     	'maxZoom': 12,
+  //       'type': 'fill',
+  //       'paint': {
+  //           'fill-color': {
+  //               property: 'poverty_rate',
+  //               stops: [
+  //                   [0, '#F2F12D'],
+  //                   [0.1, '#EED322'],
+  //                   [0.2, '#E6B71E'],
+  //                   [0.3, '#DA9C20'],
+  //                   [0.4, '#CA8323']
+  //               ]
+  //           },
+  //           'fill-opacity': 0.75
+  //       }
+  //   }, 'waterway-label');
+
+
+});
+
+</script>
+
+</body>
+</html>
