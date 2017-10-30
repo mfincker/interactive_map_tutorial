@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title>Interactive Map - 6</title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.js'></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.css' rel='stylesheet' />
+        <link href='main.css' rel="stylesheet"/>
+    </head>
+
+    <body>
+
+        <h1>Building an interactive map with MapboxGL.js</h1>
+        <h2>Interactive web map tutorial - part 6</h2>
+
+        <div id="map-area">
+
+            <div id='map'></div>
+
+            <div id='map-side'>
+                <div id='var-switch'>
+                    <span class="title">Demographic Origin:</span>
+                    <div id='vars'></div>
+                </div>
+                
+                <div id="legend"></div>
+
+            </div>
+
+        </div>
+
+        <div>
+            <p>In this step, we are adding:
+                <ul>
+                    <li>a legend to our map using D3.js</li>
+                    <li>the ability to switch between the different demographic origin.</li>
+                </ul>
+            </p>
+
+            <button id="gist-code-button">Click here for the full code</button>
+
+            <div id="gist-code">
+                <script src="https://gist.github.com/mfincker/35efbce07d2af7105ec2bc7e39b3fd91.js"></script>
+            </div>
+            
+
+        </div>
+
+        <script src="website-main.js"></script>
+        <script src="map.js"></script>
+
+
+    </body>
+</html>
