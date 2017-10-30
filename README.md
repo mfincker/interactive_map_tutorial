@@ -10,5 +10,6 @@ Tutorial parts:
   4. [Mapbox set up](./4_uploading_mbtiles_to_mapbox): MapBox will host our tiles and serve them whenver we need them. In this step, we will set up a MapBox account and upload our tiles.
   5. [First map using MapBoxGl.js](./5_map_skeleton_and_zoom_feature): In this step, we will build our first map and we will set it up so that the layer displayed depends on the zoom level. You can see the live version of the map [here](https://mfincker.github.io/map_tutorial/part5/map.html). 
   6. [Making the map more legible](./6_variable_switching): We will add a legend to explain the chloropleth colors using D3.js. We will also add the ability to switch between demographic variables using radio buttons. Live version [here](https://mfincker.github.io/map_tutorial/part6/map.html).
+  7. [Adding interaction](./7_highlight_tooltips): To make the map more iteractive, we will add polygon highlighting when the mouse moves over a region, as well as tooltips displaying more information about the currently highlighted region. Live version [here](https://mfincker.github.io/map_tutorial/part7/map.html).
   
 **UNDER CONSTRUCTION, might not work all the time. Watch the repo for updates.**
