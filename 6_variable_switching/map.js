@@ -16,7 +16,7 @@ const color_scale = [
                     ];
 
 // Initialize mapbox map with desired stylesheet
-const map = new mapboxgl.Map({
+const Map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mfincker/cj8q54extaap22rqmx4ylissd',
     center: [-98, 38.88],
@@ -26,7 +26,7 @@ const map = new mapboxgl.Map({
 
 // ====================================================================
 // MAP LOAD
-map.on('load', function() {
+Map.on('load', function() {
 
     // Keep variables here to avoid polluting global namespace
 
@@ -92,15 +92,14 @@ map.on('load', function() {
     );
 
     // Loading sources and layers
-    sources.forEach((s) => {map.addSource(s.level, s.source);});
+    sources.forEach((s) => {Map.addSource(s.level, s.source);});
 
-    layers.forEach((l) => {map.addLayer(l.layer, l.before);});
+    layers.forEach((l) => {Map.addLayer(l.layer, l.before);});
 
 
     // ==================================================================
     // ==================================================================
     // NEW CONTENT STARTS BELOW
-    // ------------------------------------------------------------------
 
 
     // ==================================================================
@@ -146,7 +145,7 @@ map.on('load', function() {
 
             // Iterate over each data layer and set the variable to be used
             layer_names.forEach(
-                (n) => { map.setPaintProperty(n, 'fill-color', { property: e.target.value,
+                (n) => { Map.setPaintProperty(n, 'fill-color', { property: e.target.value,
                                                                  stops: color_scale });
                 });
         }
