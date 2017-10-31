@@ -155,6 +155,8 @@ Map.on('load', function() {
                 .setLngLat(e.lngLat)
                 .setHTML(format_pop_up(feature, l.layer.id))
                 .addTo(Map);
+
+            add_bar_chart(feature.properties);
         });
 
         Map.on('mouseleave', l.layer.id, () => {
@@ -173,15 +175,105 @@ Map.on('load', function() {
         let name;
 
         if (region == "state-layer") {
-            name = feature.properties.name
+            name = '<h1>' + feature.properties.name + '</h1>'
         } else if (region == "county-layer") {
-            name = feature.properties.county + ', ' + feature.properties.abb
+            name = '<h1>' + feature.properties.county + ', ' + feature.properties.abb + '</h1>'
         } else {
-            name = feature.properties.name + ', ' + feature.properties.county + ', ' + feature.properties.abb
+            name = '<h1>' + feature.properties.name + '</h1><h3>' + feature.properties.county + ', ' + feature.properties.abb + '</h3>'
         }
 
-        return name
+        return '<div class="tooltip">' + name + '</div>'
+    }
+
+
+    // Compute bar chart for tooltip
+    function add_bar_chart(props) {
+        console.log(props);
+
+        const data = [  {'origin': 'asian',
+                         'percent': props.asian_percent},
+                        {'origin': 'black',
+                         'percent': props.black_percent},
+                        {'origin': 'hispanic',
+                         'percent': props.hispanic_percent},
+                        // {'origin': 'native american',
+                        //  'percent': props.native_percent},
+                        // {'origin': 'pacific islander',
+                        //  'percent': props.pacific_percent},
+                        {'origin': 'white',
+                         'percent': props.white_percent},
+                        {'origin': 'other',
+                         'percent': props.other_percent + props.native_percent + props.pacific_percent},
+        ];
+
+        // Remove previous svg element, if any
+        d3.select(".tooltip")
+                    .selectAll("svg")
+                    .remove();
+
+        // Dimensions
+        const m = {top: 10, right: 5, bottom: 5, left: 5},
+            p = {top: 0, right: 15, bottom: 0, left: 33},
+            width = 150 - m.left - m.right,
+            height = 110 - m.top - m.bottom;
+
+        // Initialize svg element
+        const popup_svg = d3.select(".tooltip")
+                                    .append("svg")
+                                        .attr("width", width + m.left + m.right)
+                                        .attr("height", height + m.top + m.bottom)
+                                    .append('g')
+                                        .attr('transform', "translate(" + m.left + "," + m.top + ")");
+
+
+        // Scales
+        const color = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        
+        const x = d3.scaleLinear()
+                    .rangeRound([0, width - p.left - p.right])
+                    .domain([0, 1]);
+
+        const y = d3.scaleBand()
+                    .rangeRound([0, height])
+                    .paddingInner(0.2)
+                    .domain(data.map(d => d.origin));
+
+        const yAxis = d3.axisLeft(y).tickSize(0);
+
+        const format = d3.format(".0%");
+
+        // y-Axis
+        popup_svg.append("g")
+                 .attr("class", "axis axis-y")
+                 .call(yAxis)
+                 .attr('transform', "translate(" + p.left + ",0)");
+
+        // Bar + percent text group
+        const bars = popup_svg.selectAll('g.bar')
+                              .data(data)
+                              .enter()
+                                .append('g')
+                                .attr('class', 'bar')
+                                .attr('transform', d => ('translate(' + p.left + ',' + y(d.origin) +')'));
+
+        // Bars
+        bars.append('rect')
+            .attr('height', y.bandwidth())
+            .attr('width', d => x(d.percent))
+            .attr('fill', (d, i) => color(i))
+
+        // Percent text
+        bars.append('text')
+            .attr('class', 'value')
+            .attr('x', d => x(d.percent))
+            .attr('y', d => (y.bandwidth() / 2))
+            .attr('dx', 2)
+            .attr('dy', '0.35em')
+            .text(d => format(d.percent))
+    
     };
+
+
 
 
 
@@ -206,20 +298,12 @@ Map.on('load', function() {
     document.getElementById("vars").innerHTML = var_names.reduce(populate_vars, '');
 
     function populate_vars(innerHtml, v) {
-        return (v.name === "asian") 
-            ? innerHtml + 
-              '<label><input type="radio" name="layers" value="' + 
-              v.varname + 
-              '" checked>' + 
-              v.name + 
-              "</label>"
-
-            : innerHtml + 
-              '<label><input type="radio" name="layers" value="' + 
-              v.varname + 
-              '">' + 
-              v.name + 
-              "</label>";
+        return innerHtml + 
+               '<label><input type="radio" name="layers" value="' + 
+               v.varname + 
+               ((v.name === "asian") ? '" checked>' : '">') + 
+               v.name + 
+               "</label>";
     }
 
 
